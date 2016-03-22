@@ -1,0 +1,40 @@
+      clients_attached, client_attach_points = add_asn_endpoints(
+          vertices,
+          graphlinks,
+          args.client_data,
+          args.num_clients,
+          'client')
+
+      log.info("Attached {0} clients to {1} attachment points".format(
+          clients_attached, client_attach_points))
+
+    log.info("Attaching destinations to graph.")
+    #Add dests
+    if args.num_dests:
+        dests_attached, dest_attach_points = add_alexa_destinations(
+            vertices,
+            graphlinks,
+            args.num_dests)
+
+        log.info("Attached {0} dests to {0} attachment points".format(
+            dests_attached, dest_attach_points))
+
+    protected = set()
+    protected.update([poi['pop'] for poi in PoIs])
+    protected.update(vertices.keys())
+
+    # We want to trim all of the hanging edges of the graph.
+    log.info("Trimming degree-1 vertices...")
+    found_hanging_edge = True
+    pass_ctr = 0
+
+    while found_hanging_edge:
+        pass_ctr += 1
+        found_hanging_edge = False
+        removed = set()
+        n = 0
+        timer = ProgressTimer(len(linkdict))
+        for pop in linkdict.keys():
+
+            if n % 100 == 0 or n == timer.total - 1:
+samantha@ambrella:~/topology20150102$ vim /usr/local/lib/python2.7/dist-packages/inettopology.popmap-0.1-py2.7.egg/inettopology_popmap/graph/core.py

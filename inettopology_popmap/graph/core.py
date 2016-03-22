@@ -23,6 +23,7 @@ import inettopology_popmap.graph.datautil as datautil
 import inettopology_popmap.graph.concurrent as concurrent
 from inettopology_popmap.data.cleanup import pipelined_delete
 
+import pdb
 
 def rand_key(keybase):
     return "%s:%s" % (keybase, random.randint(0, 10000))
@@ -117,7 +118,7 @@ def create_graph(args):
     def rev_tuple(tup):
         return (tup[1], tup[0])
 
-    for edge in core_graph.edges_iter:
+    for edge in core_graph.edges_iter():
         if (not r.sismember(PATH_KEY, edge) and
                 not r.sismember(PATH_KEY, rev_tuple(edge))):
             to_remove.append(edge)
@@ -203,8 +204,8 @@ def load_from_redis(r, args):
             graphlinks,
             args.num_dests)
 
-    log.info("Attached {0} dests to {0} attachment points".format(
-        dests_attached, dest_attach_points))
+        log.info("Attached {0} dests to {0} attachment points".format(
+            dests_attached, dest_attach_points))
 
     protected = set()
     protected.update([poi['pop'] for poi in PoIs])
@@ -295,6 +296,7 @@ def load_from_redis(r, args):
                             nodetype='relay',
                             **poi)
 
+	pdb.set_trace()
         linkdelays = [
             delay
             for edge in r.smembers(dbkeys.Link.intralink(poi['pop']))
@@ -307,8 +309,9 @@ def load_from_redis(r, args):
           stats.incr('poi-latency-defaulted')
 
         graphlinks.append(EdgeLink(poi['id'], poi['pop'],
-                          {'latency': deciles,
-                            'med_latency': deciles[len(deciles)/2]}))
+                          {'jitter': max(deciles)- min(deciles),
+                            'latency': deciles[len(deciles)/2],
+			    'packetloss': 0.0}))
 
         stats.incr('num-pois')
         tor_vertices.add(poi['id'])
@@ -349,7 +352,9 @@ def load_from_redis(r, args):
               latency = eval(r.get("graph:collapsed:%s" %
                                    (dbkeys.Link.interlink(pop1, pop2))))
             graphlinks.append(EdgeLink(pop1, pop2,
-              {'latency': latency, 'med_latency': latency[len(latency)/2]}))
+                          {'jitter': max(deciles)- min(deciles),
+                            'latency': deciles[len(deciles)/2],
+			    'packetloss': 0.0}))
 
             stats.incr('num-links')
             already_processed.add(dbkeys.Link.interlink(pop1, pop2))
@@ -456,8 +461,9 @@ def add_alexa_destinations(vertex_list, linklist, count):
         linklist.append(
             EdgeLink(nodeid,
                      db_ip_pop,
-                     {'latency': latency,
-                      'med_latency': latency[len(latency)/2]}))
+                          {'jitter': max(deciles)- min(deciles),
+                            'latency': deciles[len(deciles)/2],
+			    'packetloss': 0.0}))
 
         attached += 1
 
@@ -539,8 +545,9 @@ def add_asn_endpoints(vertex_list, linklist, datafile, count, endpointtype):
 
                 linklist.append(EdgeLink(node_id(asn, j),
                                 data[0],
-                                {'latency': latency
-                                 'med_latency': latency[len(latency)/2]}))
+                          {'jitter': max(deciles)- min(deciles),
+                            'latency': deciles[len(deciles)/2],
+			    'packetloss': 0.0}))
                 counter += 1
 
         log.info(Color.wrapformat("Success [{0} attached]", Color.OKBLUE,
