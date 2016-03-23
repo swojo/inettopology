@@ -53,7 +53,7 @@ def thread_shortest_path(graphpath, sp_key, type_key,
         log_out.flush()
 
         paths = nx.single_source_dijkstra_path(
-            thread_graph, target, weight='latency')
+            thread_graph, target, weight='med_latency')
 
         for path_target, path in paths.iteritems():
           if r.hget(type_key, path_target) in ('relay', 'client', 'dest'):
