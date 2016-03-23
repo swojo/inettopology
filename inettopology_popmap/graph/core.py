@@ -296,7 +296,6 @@ def load_from_redis(r, args):
                             nodetype='relay',
                             **poi)
 
-	pdb.set_trace()
         linkdelays = [
             delay
             for edge in r.smembers(dbkeys.Link.intralink(poi['pop']))
