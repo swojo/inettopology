@@ -53,7 +53,7 @@ def thread_shortest_path(graphpath, sp_key, type_key,
         log_out.flush()
 
         paths = nx.single_source_dijkstra_path(
-            thread_graph, target, weight='med_latency')
+            thread_graph, target, weight='latency')
 
         for path_target, path in paths.iteritems():
           if r.hget(type_key, path_target) in ('relay', 'client', 'dest'):
@@ -62,11 +62,11 @@ def thread_shortest_path(graphpath, sp_key, type_key,
               errors, total = check_valley_free(
                   thread_graph, path, log=log_out)
 
-              if total > 0:
-                log_out.write("Path from %{0} to %s was valley-free. "
-                              " %0.0f/%0.0f (%0.2f) missing links in calc\n"
-                              % (target, path_target,
-                                 errors, total, errors / total))
+#              if total > 0:
+#                log_out.write("Path from %{0} to %s was valley-free. "
+#                              " %0.0f/%0.0f (%0.2f) missing links in calc\n"
+#                              % (target, path_target,
+#                                 errors, total, errors / total))
 
             except ValleyFreeError:
               # If it's not valley free, we rebuild a new path
