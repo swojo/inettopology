@@ -19,6 +19,7 @@ import inettopology_popmap.data.preprocess as preprocess
 import inettopology_popmap.connection as connection
 from inettopology_popmap.data import DataError
 
+import pdb
 
 class NoPopExistsError(Exception):
   pass
@@ -438,6 +439,7 @@ def _assign_pops(unassigned_list_key, failed_list_key,
         # This means that one side of this link has no AS. We don't want it
        continue
 
+      log.info("link: %s, delay: %s" % (link, dbkeys.get_delay(link)))
       if dbkeys.get_delay(link) > 2.5 or cross_as or cross_24:
         success = handle_cross_pop_link(link)
       else:

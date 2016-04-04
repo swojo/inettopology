@@ -94,7 +94,7 @@ class TraceParser(object):
     for latest, previous in util.pairwise(reversed(rawdata)):
       dist = round(latest[1] - previous[1], 3)
       if dist == 0.0:
-	dist = 0.00001
+	dist = 1.0
       if previous[0] != latest[0]:
         pairs.insert(0, (previous[0], latest[0], dist))
 

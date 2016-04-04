@@ -161,6 +161,8 @@ class LinkDict(dict):
                for edge in r.smembers(dbkeys.Link.interlink(node, side1))
                for delay in r.smembers(dbkeys.delay_key(*eval(edge)))])
         except:
+	  print node
+	  print side1
           side1_delays = eval(r.get("graph:collapsed:%s" %
                               (dbkeys.Link.interlink(node, side1))))
         try:
@@ -222,6 +224,7 @@ class VertexList(dict):
         for vertex, attrdict in self.iteritems():
             f.write("%s " % (vertex))
             for attr, val in attrdict.iteritems():
+		print("attr %s, val %s" % (attr,val))
                 f.write("%s=%s " % (attr, val))
             f.write("\n")
 

@@ -309,6 +309,7 @@ def load_from_redis(r, args):
 
         graphlinks.append(EdgeLink(poi['id'], poi['pop'],
                           {'jitter': max(deciles)- min(deciles),
+			    'deciles': deciles,
                             'latency': deciles[len(deciles)/2],
 			    'packetloss': 0.0}))
 
@@ -348,10 +349,13 @@ def load_from_redis(r, args):
             try:
               latency = util.decile_transform(linkdelays)
             except util.EmptyListError:
+	      print pop1
+	      print pop2	
               latency = eval(r.get("graph:collapsed:%s" %
                                    (dbkeys.Link.interlink(pop1, pop2))))
             graphlinks.append(EdgeLink(pop1, pop2,
                           {'jitter': max(deciles)- min(deciles),
+			    'deciles': deciles,
                             'latency': deciles[len(deciles)/2],
 			    'packetloss': 0.0}))
 
@@ -461,6 +465,7 @@ def add_alexa_destinations(vertex_list, linklist, count):
             EdgeLink(nodeid,
                      db_ip_pop,
                           {'jitter': max(deciles)- min(deciles),
+			    'deciles': deciles,
                             'latency': deciles[len(deciles)/2],
 			    'packetloss': 0.0}))
 
@@ -545,6 +550,7 @@ def add_asn_endpoints(vertex_list, linklist, datafile, count, endpointtype):
                 linklist.append(EdgeLink(node_id(asn, j),
                                 data[0],
                           {'jitter': max(deciles)- min(deciles),
+			    'deciles': deciles,
                             'latency': deciles[len(deciles)/2],
 			    'packetloss': 0.0}))
                 counter += 1
@@ -590,6 +596,7 @@ def collapse_graph_in_place(graph):
         if len(to_collapse) != 0:
             logging.info("Collapsing %s nodes" % len(to_collapse))
 
+	    pdb.set_trace()
             for node in to_collapse:
                 neighbors = graph.neighbors(node)
                 s1_weight = float(graph[node][neighbors[0]]['latency'])

@@ -162,7 +162,8 @@ if not opts[:other]
       end
 
       $log.info "Found match for #{addr}: #{match.ip} at #{match.bits} bits"
-      popInfo = {ip: match.ip, 
+      popInfo = {id: "poi-#{i}",
+		 ip: match.ip, 
                  pop: redis.hget("ip:#{match.ip.to_s}",'pop'), 
                  asn: redis.hget("ip:#{match.ip.to_s}",'asn') 
                 }
@@ -197,16 +198,31 @@ else
     $log.info("Searching for match for #{ip} [#{i}]")
 
     match = searcher.search_slash16(ip) || searcher.search_slash8(ip)
+    	popInfo = {id: "poi-#{i}",
+		 ip: match.ip, 
+                 pop: redis.hget("ip:#{match.ip.to_s}",'pop'), 
+                }
     if match.nil?
       $log.warn "No match found for #{ip} even at /8"
       stats[:unmatched_ip] += 1
       next
     end
 
+    popInfo[:relay_ip] = ip
+    popInfo[:match_bits] = match.bits
+
     $log.info "Found match for #{ip}: #{match.ip} at #{match.bits} bits"
 
-    print "#{line} #{match.ip} #{match.bits}"
+    #print "#{line}.strip #{match.ip} #{match.bits}"
     stats[:matched] += 1
+
+    begin
+      print(JSON.generate(popInfo))
+      print(",\n")
+    rescue
+      next
+    end
+    
   end
 end
 

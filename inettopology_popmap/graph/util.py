@@ -1,3 +1,5 @@
+import pdb
+
 class EmptyListError(Exception):
     pass
 
