@@ -210,6 +210,9 @@ else
 
     popInfo[:relay_ip] = ip
     popInfo[:match_bits] = match.bits
+    popInfo[:packetloss] = 0.0
+    popInfo[:bandwidthup] = 102400
+    popInfo[:bandwidthdown] = 102400
 
     $log.info "Found match for #{ip}: #{match.ip} at #{match.bits} bits"
 

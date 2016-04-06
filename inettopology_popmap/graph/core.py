@@ -533,7 +533,7 @@ def add_asn_endpoints(vertex_list, linklist, datafile, count, endpointtype):
             num_to_attach = round(count * (float(data[1]) / float(total)))
             for j in xrange(0, int(num_to_attach)):
 
-                vertex_list.add_vertex(node_id(asn, j), nodeid=node_id(asn, j),
+                vertex_list.add_vertex(node_id(asn, j), nodeid=node_id(asn, j), 
                                        nodetype=endpointtype, asn=asn)
                 linkkey = dbkeys.Link.intralink(data[0])
 
