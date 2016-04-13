@@ -301,6 +301,8 @@ def load_from_redis(r, args):
             for edge in r.smembers(dbkeys.Link.intralink(poi['pop']))
             for delay in r.smembers(dbkeys.delay_key(*eval(edge)))]
 
+#	log.info("poi['pop'] = {0}, intralink {1}".format(poi['pop'], r.smembers(dbkeys.Link.intralink(poi['pop']))))
+
         try:
           deciles = util.decile_transform(linkdelays)
         except util.EmptyListError:
@@ -354,9 +356,9 @@ def load_from_redis(r, args):
               latency = eval(r.get("graph:collapsed:%s" %
                                    (dbkeys.Link.interlink(pop1, pop2))))
             graphlinks.append(EdgeLink(pop1, pop2,
-                          {'jitter': max(deciles)- min(deciles),
-			    'deciles': deciles,
-                            'latency': deciles[len(deciles)/2],
+                          {'jitter': max(latency)- min(latency),
+			    'deciles': latency,
+                            'latency': latency[len(latency)/2],
 			    'packetloss': 0.0}))
 
             stats.incr('num-links')
@@ -464,9 +466,9 @@ def add_alexa_destinations(vertex_list, linklist, count):
         linklist.append(
             EdgeLink(nodeid,
                      db_ip_pop,
-                          {'jitter': max(deciles)- min(deciles),
-			    'deciles': deciles,
-                            'latency': deciles[len(deciles)/2],
+                          {'jitter': max(latency)- min(latency),
+			    'deciles': latency,
+                            'latency': latency[len(latency)/2],
 			    'packetloss': 0.0}))
 
         attached += 1
@@ -549,9 +551,9 @@ def add_asn_endpoints(vertex_list, linklist, datafile, count, endpointtype):
 
                 linklist.append(EdgeLink(node_id(asn, j),
                                 data[0],
-                          {'jitter': max(deciles)- min(deciles),
-			    'deciles': deciles,
-                            'latency': deciles[len(deciles)/2],
+                          {'jitter': max(latency)- min(latency),
+			    'deciles': latency,
+                            'latency': latency[len(latency)/2],
 			    'packetloss': 0.0}))
                 counter += 1
 
@@ -596,7 +598,6 @@ def collapse_graph_in_place(graph):
         if len(to_collapse) != 0:
             logging.info("Collapsing %s nodes" % len(to_collapse))
 
-	    pdb.set_trace()
             for node in to_collapse:
                 neighbors = graph.neighbors(node)
                 s1_weight = float(graph[node][neighbors[0]]['latency'])
